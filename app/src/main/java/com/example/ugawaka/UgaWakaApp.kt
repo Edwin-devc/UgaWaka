@@ -101,6 +101,16 @@ fun UgaWakaApp() {
                 }
             )
         }
+        composable("providerBookings") {
+            ProviderBookingsScreen(
+                onNavigate = { route ->
+                    navController.navigate(route) {
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                }
+            )
+        }
         composable("services") {
             ServicesScreen(
                 onServiceClick = { serviceName ->

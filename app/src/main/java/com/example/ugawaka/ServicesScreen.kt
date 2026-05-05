@@ -267,7 +267,9 @@ fun UgaWakaBottomNavigation(
             icon = { Icon(Icons.Default.CalendarMonth, contentDescription = null) },
             label = { Text("Bookings") },
             selected = currentScreen == "bookings",
-            onClick = { onNavigate("bookings") },
+            onClick = { 
+                if (isProvider) onNavigate("providerBookings") else onNavigate("bookings")
+            },
             colors = NavigationBarItemDefaults.colors(selectedIconColor = UgaGreen, selectedTextColor = UgaGreen)
         )
         NavigationBarItem(
