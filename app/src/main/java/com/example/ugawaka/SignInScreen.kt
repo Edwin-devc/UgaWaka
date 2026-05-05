@@ -35,7 +35,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 @Composable
 fun SignInScreen(
     onSignUpClick: () -> Unit,
-    onLoginSuccess: () -> Unit,
+    onLoginSuccess: (String) -> Unit,
     viewModel: AuthViewModel = viewModel()
 ) {
     val selectedRole = viewModel.selectedRole

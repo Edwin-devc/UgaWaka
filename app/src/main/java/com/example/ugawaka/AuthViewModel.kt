@@ -27,10 +27,10 @@ class AuthViewModel : ViewModel() {
         password = newPassword
     }
 
-    fun login(onSuccess: () -> Unit) {
+    fun login(onSuccess: (String) -> Unit) {
         // Here you would typically add validation and call a repository/use case
         if (email.isNotBlank() && password.isNotBlank()) {
-            onSuccess()
+            onSuccess(selectedRole)
         }
     }
 }

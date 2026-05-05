@@ -32,7 +32,7 @@ import com.example.ugawaka.ui.theme.UgaGreen
 import com.example.ugawaka.ui.theme.UgaWakaTheme
 
 @Composable
-fun SignUpScreen(onSignInClick: () -> Unit, onSignUpSuccess: () -> Unit) {
+fun SignUpScreen(onSignInClick: () -> Unit, onSignUpSuccess: (String) -> Unit) {
     var selectedRole by remember { mutableStateOf("Client") }
     var fullName by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
@@ -196,7 +196,7 @@ fun SignUpScreen(onSignInClick: () -> Unit, onSignUpSuccess: () -> Unit) {
             Spacer(modifier = Modifier.height(40.dp))
 
             Button(
-                onClick = { onSignUpSuccess() },
+                onClick = { onSignUpSuccess(selectedRole) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),

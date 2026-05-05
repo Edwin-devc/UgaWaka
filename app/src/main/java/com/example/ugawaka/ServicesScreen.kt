@@ -228,7 +228,7 @@ fun CategoryItem(category: ServiceCategory, onClick: () -> Unit) {
 }
 
 @Composable
-fun UgaWakaBottomNavigation(currentScreen: String) {
+fun UgaWakaBottomNavigation(currentScreen: String, isProvider: Boolean = false) {
     NavigationBar(
         containerColor = Color.White,
         tonalElevation = 8.dp
@@ -240,13 +240,15 @@ fun UgaWakaBottomNavigation(currentScreen: String) {
             onClick = { /* TODO */ },
             colors = NavigationBarItemDefaults.colors(selectedIconColor = UgaGreen, selectedTextColor = UgaGreen)
         )
-        NavigationBarItem(
-            icon = { Icon(Icons.Default.Handyman, contentDescription = null) },
-            label = { Text("Services") },
-            selected = currentScreen == "services",
-            onClick = { /* TODO */ },
-            colors = NavigationBarItemDefaults.colors(selectedIconColor = UgaGreen, selectedTextColor = UgaGreen)
-        )
+        if (!isProvider) {
+            NavigationBarItem(
+                icon = { Icon(Icons.Default.Handyman, contentDescription = null) },
+                label = { Text("Services") },
+                selected = currentScreen == "services",
+                onClick = { /* TODO */ },
+                colors = NavigationBarItemDefaults.colors(selectedIconColor = UgaGreen, selectedTextColor = UgaGreen)
+            )
+        }
         NavigationBarItem(
             icon = { Icon(Icons.Default.CalendarMonth, contentDescription = null) },
             label = { Text("Bookings") },

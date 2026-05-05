@@ -27,15 +27,23 @@ import com.example.ugawaka.ui.theme.UgaWakaTheme
 fun ProviderProfileScreen(
     providerName: String,
     onBack: () -> Unit,
-    onBook: () -> Unit
+    onBook: () -> Unit,
+    isOwnProfile: Boolean = false
 ) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Provider Profile") },
+                title = { Text(if (isOwnProfile) "My Profile" else "Provider Profile") },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                    }
+                },
+                actions = {
+                    if (isOwnProfile) {
+                        IconButton(onClick = { /* TODO: Edit Profile */ }) {
+                            Icon(Icons.Default.Edit, contentDescription = "Edit")
+                        }
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -46,26 +54,29 @@ fun ProviderProfileScreen(
         },
         bottomBar = {
             Column {
-                Surface(
-                    modifier = Modifier.fillMaxWidth(),
-                    shadowElevation = 4.dp,
-                    color = Color.White
-                ) {
-                    Button(
-                        onClick = onBook,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = UgaGreen),
-                        shape = RoundedCornerShape(12.dp)
+                if (!isOwnProfile) {
+                    Surface(
+                        modifier = Modifier.fillMaxWidth(),
+                        shadowElevation = 4.dp,
+                        color = Color.White
                     ) {
-                        Text("Book Now", modifier = Modifier.padding(8.dp), fontSize = 16.sp)
+                        Button(
+                            onClick = onBook,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = UgaGreen),
+                            shape = RoundedCornerShape(12.dp)
+                        ) {
+                            Text("Book Now", modifier = Modifier.padding(8.dp), fontSize = 16.sp)
+                        }
                     }
                 }
-                UgaWakaBottomNavigation(currentScreen = "services")
+                UgaWakaBottomNavigation(currentScreen = if (isOwnProfile) "profile" else "services")
             }
         }
-    ) { paddingValues ->
+    )
+{ paddingValues ->
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()

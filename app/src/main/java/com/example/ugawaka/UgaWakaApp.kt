@@ -15,9 +15,15 @@ fun UgaWakaApp() {
         composable("signin") {
             SignInScreen(
                 onSignUpClick = { navController.navigate("signup") },
-                onLoginSuccess = {
-                    navController.navigate("services") {
-                        popUpTo("signin") { inclusive = true }
+                onLoginSuccess = { role ->
+                    if (role == "Provider") {
+                        navController.navigate("providerDashboard") {
+                            popUpTo("signin") { inclusive = true }
+                        }
+                    } else {
+                        navController.navigate("services") {
+                            popUpTo("signin") { inclusive = true }
+                        }
                     }
                 }
             )
@@ -25,10 +31,38 @@ fun UgaWakaApp() {
         composable("signup") {
             SignUpScreen(
                 onSignInClick = { navController.navigate("signin") },
-                onSignUpSuccess = {
-                    navController.navigate("services") {
-                        popUpTo("signup") { inclusive = true }
+                onSignUpSuccess = { role ->
+                    if (role == "Provider") {
+                        navController.navigate("providerSetup") {
+                            popUpTo("signup") { inclusive = true }
+                        }
+                    } else {
+                        navController.navigate("services") {
+                            popUpTo("signup") { inclusive = true }
+                        }
                     }
+                }
+            )
+        }
+        composable("providerSetup") {
+            ProviderSetupScreen(
+                onSetupComplete = {
+                    navController.navigate("providerDashboard") {
+                        popUpTo("providerSetup") { inclusive = true }
+                    }
+                }
+            )
+        }
+        composable("providerDashboard") {
+            ProviderDashboardScreen(
+                onLogout = {
+                    navController.navigate("signin") {
+                        popUpTo("providerDashboard") { inclusive = true }
+                    }
+                },
+                onProfileClick = {
+                    // Navigate to provider's own profile view/edit
+                    navController.navigate("providerProfile/John Katumba/Plumbing")
                 }
             )
         }
