@@ -28,17 +28,23 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.ugawaka.ui.theme.UgaGreen
 import com.example.ugawaka.ui.theme.UgaWakaTheme
 
 @Composable
-fun SignUpScreen(onSignInClick: () -> Unit, onSignUpSuccess: () -> Unit) {
-    var selectedRole by remember { mutableStateOf("Client") }
-    var fullName by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
-    var phoneNumber by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var confirmPassword by remember { mutableStateOf("") }
+fun SignUpScreen(
+    onSignInClick: () -> Unit, 
+    onSignUpSuccess: () -> Unit,
+    viewModel: AuthViewModel = viewModel(factory = ViewModelFactory)
+) {
+    val selectedRole = viewModel.selectedRole
+    val fullName = viewModel.fullName
+    val email = viewModel.email
+    val phoneNumber = viewModel.phoneNumber
+    val password = viewModel.password
+    val confirmPassword = viewModel.confirmPassword
+    val authError = viewModel.authError
     val scrollState = rememberScrollState()
 
     Column(
@@ -98,12 +104,15 @@ fun SignUpScreen(onSignInClick: () -> Unit, onSignUpSuccess: () -> Unit) {
                 fontWeight = FontWeight.Bold,
                 color = Color.Black
             )
-            Text(
-                text = "Create your UGAWAKA account",
-                fontSize = 18.sp,
-                color = Color.Gray,
-                modifier = Modifier.padding(top = 4.dp)
-            )
+            
+            if (authError != null) {
+                Text(
+                    text = authError,
+                    color = Color.Red,
+                    fontSize = 14.sp,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
+            }
 
             Spacer(modifier = Modifier.height(32.dp))
 
@@ -115,14 +124,14 @@ fun SignUpScreen(onSignInClick: () -> Unit, onSignUpSuccess: () -> Unit) {
                     text = "Client",
                     isSelected = selectedRole == "Client",
                     modifier = Modifier.weight(1f),
-                    onClick = { selectedRole = "Client" }
+                    onClick = { viewModel.onRoleSelected("Client") }
                 )
                 Spacer(modifier = Modifier.width(16.dp))
                 RoleButton(
                     text = "Provider",
                     isSelected = selectedRole == "Provider",
                     modifier = Modifier.weight(1f),
-                    onClick = { selectedRole = "Provider" }
+                    onClick = { viewModel.onRoleSelected("Provider") }
                 )
             }
 
@@ -133,7 +142,7 @@ fun SignUpScreen(onSignInClick: () -> Unit, onSignUpSuccess: () -> Unit) {
             Spacer(modifier = Modifier.height(12.dp))
             CustomTextField(
                 value = fullName,
-                onValueChange = { fullName = it },
+                onValueChange = { viewModel.onFullNameChanged(it) },
                 placeholder = "Enter your full name",
                 leadingIcon = Icons.Default.Person,
                 keyboardType = KeyboardType.Text
@@ -146,7 +155,7 @@ fun SignUpScreen(onSignInClick: () -> Unit, onSignUpSuccess: () -> Unit) {
             Spacer(modifier = Modifier.height(12.dp))
             CustomTextField(
                 value = email,
-                onValueChange = { email = it },
+                onValueChange = { viewModel.onEmailChanged(it) },
                 placeholder = "Enter your email",
                 leadingIcon = Icons.Default.Email,
                 keyboardType = KeyboardType.Email
@@ -159,7 +168,7 @@ fun SignUpScreen(onSignInClick: () -> Unit, onSignUpSuccess: () -> Unit) {
             Spacer(modifier = Modifier.height(12.dp))
             CustomTextField(
                 value = phoneNumber,
-                onValueChange = { phoneNumber = it },
+                onValueChange = { viewModel.onPhoneNumberChanged(it) },
                 placeholder = "Enter your phone number",
                 leadingIcon = Icons.Default.Phone,
                 keyboardType = KeyboardType.Phone
@@ -172,7 +181,7 @@ fun SignUpScreen(onSignInClick: () -> Unit, onSignUpSuccess: () -> Unit) {
             Spacer(modifier = Modifier.height(12.dp))
             CustomTextField(
                 value = password,
-                onValueChange = { password = it },
+                onValueChange = { viewModel.onPasswordChanged(it) },
                 placeholder = "Create a password",
                 leadingIcon = Icons.Default.Lock,
                 keyboardType = KeyboardType.Password,
@@ -186,7 +195,7 @@ fun SignUpScreen(onSignInClick: () -> Unit, onSignUpSuccess: () -> Unit) {
             Spacer(modifier = Modifier.height(12.dp))
             CustomTextField(
                 value = confirmPassword,
-                onValueChange = { confirmPassword = it },
+                onValueChange = { viewModel.onConfirmPasswordChanged(it) },
                 placeholder = "Confirm your password",
                 leadingIcon = Icons.Default.Lock,
                 keyboardType = KeyboardType.Password,
@@ -196,7 +205,7 @@ fun SignUpScreen(onSignInClick: () -> Unit, onSignUpSuccess: () -> Unit) {
             Spacer(modifier = Modifier.height(40.dp))
 
             Button(
-                onClick = { onSignUpSuccess() },
+                onClick = { viewModel.signUp(onSignUpSuccess) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
@@ -227,13 +236,5 @@ fun SignUpScreen(onSignInClick: () -> Unit, onSignUpSuccess: () -> Unit) {
             }
             Spacer(modifier = Modifier.height(40.dp))
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun SignUpScreenPreview() {
-    UgaWakaTheme {
-        SignUpScreen(onSignInClick = {}, onSignUpSuccess = {})
     }
 }

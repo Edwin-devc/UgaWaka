@@ -23,24 +23,23 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.ugawaka.ui.theme.UgaGreen
 import com.example.ugawaka.ui.theme.UgaWakaTheme
-
-import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
 fun SignInScreen(
     onSignUpClick: () -> Unit,
     onLoginSuccess: () -> Unit,
-    viewModel: AuthViewModel = viewModel()
+    viewModel: AuthViewModel = viewModel(factory = ViewModelFactory)
 ) {
     val selectedRole = viewModel.selectedRole
     val email = viewModel.email
     val password = viewModel.password
+    val authError = viewModel.authError
     val scrollState = rememberScrollState()
 
     Column(
@@ -94,22 +93,19 @@ fun SignInScreen(
                 .fillMaxSize()
                 .padding(24.dp)
         ) {
-            Text(
-                text = "Sign In",
-                fontSize = 32.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.Black
-            )
-            Text(
-                text = "Access your UGAWAKA account",
-                fontSize = 18.sp,
-                color = Color.Gray,
-                modifier = Modifier.padding(top = 4.dp)
-            )
+            Text(text = "Sign In", fontSize = 32.sp, fontWeight = FontWeight.Bold, color = Color.Black)
+            
+            if (authError != null) {
+                Text(
+                    text = authError,
+                    color = Color.Red,
+                    fontSize = 14.sp,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
+            }
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // ROLE Section
             SectionLabel("ROLE")
             Spacer(modifier = Modifier.height(12.dp))
             Row(modifier = Modifier.fillMaxWidth()) {
@@ -130,7 +126,6 @@ fun SignInScreen(
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // EMAIL ADDRESS Section
             SectionLabel("EMAIL ADDRESS")
             Spacer(modifier = Modifier.height(12.dp))
             CustomTextField(
@@ -143,7 +138,6 @@ fun SignInScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // PASSWORD Section
             SectionLabel("PASSWORD")
             Spacer(modifier = Modifier.height(12.dp))
             CustomTextField(
@@ -155,42 +149,20 @@ fun SignInScreen(
                 isPassword = true
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                text = "Forgot Password?",
-                color = UgaGreen,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier
-                    .align(Alignment.End)
-                    .clickable { /* TODO */ }
-            )
-
             Spacer(modifier = Modifier.height(40.dp))
 
             Button(
                 onClick = { viewModel.login(onLoginSuccess) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp),
+                modifier = Modifier.fillMaxWidth().height(56.dp),
                 shape = RoundedCornerShape(16.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = UgaGreen)
             ) {
-                Text(
-                    text = "Sign In",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White
-                )
+                Text(text = "Sign In", fontSize = 18.sp, fontWeight = FontWeight.Bold)
             }
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center
-            ) {
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
                 Text(text = "Don't have an account? ", color = Color.Gray)
                 Text(
                     text = "Sign Up",
@@ -270,12 +242,4 @@ fun CustomTextField(
         ),
         singleLine = true
     )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun SignInScreenPreview() {
-    UgaWakaTheme {
-        SignInScreen(onSignUpClick = {}, onLoginSuccess = {})
-    }
 }

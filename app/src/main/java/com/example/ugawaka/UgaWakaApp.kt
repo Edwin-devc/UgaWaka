@@ -59,8 +59,7 @@ fun UgaWakaApp() {
             val providerName = backStackEntry.arguments?.getString("providerName") ?: ""
             ProviderProfileScreen(
                 providerName = providerName,
-                onBack = { navController.popBackStack() },
-                onBook = { /* TODO: Booking logic */ }
+                onBack = { navController.popBackStack() }
             )
         }
     }

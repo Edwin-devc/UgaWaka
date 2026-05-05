@@ -1,6 +1,5 @@
 package com.example.ugawaka
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -20,24 +19,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.ugawaka.ui.theme.UgaGreen
 import com.example.ugawaka.ui.theme.UgaWakaTheme
 
-data class ServiceCategory(
-    val name: String,
-    val icon: ImageVector,
-    val color: Color
-)
-
 @Composable
-fun ServicesScreen(onServiceClick: (String) -> Unit) {
+fun ServicesScreen(
+    onServiceClick: (String) -> Unit,
+    viewModel: ServicesViewModel = viewModel(factory = ViewModelFactory)
+) {
+    val categories = viewModel.uiState.categories
+    val searchQuery = viewModel.searchQuery
+
     Scaffold(
         bottomBar = { UgaWakaBottomNavigation(currentScreen = "services") }
     ) { paddingValues ->
@@ -74,7 +71,6 @@ fun ServicesScreen(onServiceClick: (String) -> Unit) {
                             shape = CircleShape,
                             color = Color.LightGray
                         ) {
-                            // Placeholder for user image
                             Icon(Icons.Default.Person, contentDescription = null)
                         }
                         Spacer(modifier = Modifier.width(12.dp))
@@ -87,20 +83,13 @@ fun ServicesScreen(onServiceClick: (String) -> Unit) {
                                 fontWeight = FontWeight.Bold
                             )
                             Text(
-                                text = "3 providers available near Nakasero right now",
+                                text = "Available providers near Nakasero",
                                 color = Color.White.copy(alpha = 0.8f),
                                 fontSize = 11.sp
                             )
                         }
                         IconButton(onClick = { /* TODO */ }) {
                             Icon(Icons.Outlined.Notifications, contentDescription = null, tint = Color.White)
-                        }
-                        Surface(modifier = Modifier.size(32.dp), shape = CircleShape, color = Color.White) {
-                            Image(
-                                painter = painterResource(id = R.drawable.ugawaka_logo),
-                                contentDescription = null,
-                                modifier = Modifier.padding(4.dp)
-                            )
                         }
                     }
                     Spacer(modifier = Modifier.height(16.dp))
@@ -116,14 +105,23 @@ fun ServicesScreen(onServiceClick: (String) -> Unit) {
                         shape = RoundedCornerShape(20.dp),
                         color = Color.White.copy(alpha = 0.2f)
                     ) {
-                        Row(
-                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(Icons.Default.Search, contentDescription = null, tint = Color.White)
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(text = "Search services...", color = Color.White.copy(alpha = 0.7f))
-                        }
+                        TextField(
+                            value = searchQuery,
+                            onValueChange = { viewModel.onSearchQueryChange(it) },
+                            modifier = Modifier.fillMaxWidth(),
+                            placeholder = { Text(text = "Search services...", color = Color.White.copy(alpha = 0.7f)) },
+                            leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, tint = Color.White) },
+                            colors = TextFieldDefaults.colors(
+                                focusedContainerColor = Color.Transparent,
+                                unfocusedContainerColor = Color.Transparent,
+                                focusedIndicatorColor = Color.Transparent,
+                                unfocusedIndicatorColor = Color.Transparent,
+                                cursorColor = Color.White,
+                                focusedTextColor = Color.White,
+                                unfocusedTextColor = Color.White
+                            ),
+                            singleLine = true
+                        )
                     }
                 }
             }
@@ -189,13 +187,6 @@ fun ServicesScreen(onServiceClick: (String) -> Unit) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            val categories = listOf(
-                ServiceCategory("Plumbing", Icons.Default.WaterDrop, Color(0xFFE3F2FD)),
-                ServiceCategory("Electrical", Icons.Default.ElectricBolt, Color(0xFFFFF9C4)),
-                ServiceCategory("Cleaning", Icons.Default.AutoAwesome, Color(0xFFE8F5E9)),
-                ServiceCategory("Mechanics", Icons.Default.DirectionsCar, Color(0xFFFFEBEE))
-            )
-
             LazyRow(
                 contentPadding = PaddingValues(horizontal = 20.dp),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
@@ -211,7 +202,7 @@ fun ServicesScreen(onServiceClick: (String) -> Unit) {
 }
 
 @Composable
-fun CategoryItem(category: ServiceCategory, onClick: () -> Unit) {
+fun CategoryItem(category: ServiceCategoryData, onClick: () -> Unit) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.clickable { onClick() }
@@ -269,13 +260,5 @@ fun UgaWakaBottomNavigation(currentScreen: String) {
             onClick = { /* TODO */ },
             colors = NavigationBarItemDefaults.colors(selectedIconColor = UgaGreen, selectedTextColor = UgaGreen)
         )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun ServicesScreenPreview() {
-    UgaWakaTheme {
-        ServicesScreen(onServiceClick = {})
     }
 }

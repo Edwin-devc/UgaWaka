@@ -1,6 +1,5 @@
 package com.example.ugawaka
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -17,35 +16,25 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.ugawaka.ui.theme.UgaGreen
 import com.example.ugawaka.ui.theme.UgaWakaTheme
-
-data class Provider(
-    val name: String,
-    val rating: Double,
-    val distance: String,
-    val price: String
-)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ServiceDetailScreen(
     serviceName: String,
     onBack: () -> Unit,
-    onProviderClick: (String) -> Unit
+    onProviderClick: (String) -> Unit,
+    viewModel: ServicesViewModel = viewModel(factory = ViewModelFactory)
 ) {
-    val providers = listOf(
-        Provider("John Katumba", 4.8, "1.2 km away", "UGX 40k/hr"),
-        Provider("Sarah Namuli", 4.9, "0.8 km away", "UGX 45k/hr"),
-        Provider("David Okello", 4.7, "2.5 km away", "UGX 35k/hr"),
-        Provider("Grace Atim", 4.6, "3.0 km away", "UGX 38k/hr")
-    )
+    // This will now be reactive as the ViewModel collects from the DB flow
+    val providers = viewModel.getProvidersForCategory(serviceName)
 
     Scaffold(
         topBar = {
@@ -81,8 +70,16 @@ fun ServiceDetailScreen(
                     modifier = Modifier.padding(16.dp)
                 )
             }
-            items(providers) { provider ->
-                ProviderCard(provider, onClick = { onProviderClick(provider.name) })
+            if (providers.isEmpty()) {
+                item {
+                    Box(modifier = Modifier.fillMaxWidth().padding(32.dp), contentAlignment = Alignment.Center) {
+                        Text(text = "No providers available for this category yet.", color = Color.Gray)
+                    }
+                }
+            } else {
+                items(providers) { provider ->
+                    ProviderCard(provider, onClick = { onProviderClick(provider.name) })
+                }
             }
             item {
                 Spacer(modifier = Modifier.height(16.dp))
@@ -136,7 +133,6 @@ fun ProviderCard(provider: Provider, onClick: () -> Unit) {
                 shape = CircleShape,
                 color = Color.LightGray
             ) {
-                // Placeholder for provider image
                 Icon(
                     painter = painterResource(id = R.drawable.ugawaka_logo),
                     contentDescription = null,
@@ -156,21 +152,13 @@ fun ProviderCard(provider: Provider, onClick: () -> Unit) {
                 Text(text = provider.price, fontSize = 14.sp, color = UgaGreen, fontWeight = FontWeight.Bold)
             }
             Button(
-                onClick = { /* TODO: Booking */ },
+                onClick = onClick,
                 colors = ButtonDefaults.buttonColors(containerColor = UgaGreen),
                 shape = RoundedCornerShape(12.dp),
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
             ) {
-                Text("Book", fontSize = 14.sp)
+                Text("View", fontSize = 14.sp)
             }
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun ServiceDetailScreenPreview() {
-    UgaWakaTheme {
-        ServiceDetailScreen(serviceName = "Plumbing", onBack = {}, onProviderClick = {})
     }
 }
