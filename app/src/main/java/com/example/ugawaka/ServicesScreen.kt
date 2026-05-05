@@ -57,14 +57,6 @@ fun ServicesScreen(onServiceClick: (String) -> Unit) {
                     .padding(20.dp)
             ) {
                 Column {
-                    Text(
-                        text = "CLIENT EXPERIENCE",
-                        color = Color.White.copy(alpha = 0.7f),
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.align(Alignment.CenterHorizontally)
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
@@ -249,7 +241,7 @@ fun UgaWakaBottomNavigation(currentScreen: String) {
             colors = NavigationBarItemDefaults.colors(selectedIconColor = UgaGreen, selectedTextColor = UgaGreen)
         )
         NavigationBarItem(
-            icon = { Icon(Icons.Default.Search, contentDescription = null) },
+            icon = { Icon(Icons.Default.Handyman, contentDescription = null) },
             label = { Text("Services") },
             selected = currentScreen == "services",
             onClick = { /* TODO */ },

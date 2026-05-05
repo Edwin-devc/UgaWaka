@@ -38,7 +38,8 @@ data class Provider(
 fun ServiceDetailScreen(
     serviceName: String,
     onBack: () -> Unit,
-    onProviderClick: (String) -> Unit
+    onProviderClick: (String) -> Unit,
+    onBookClick: (String) -> Unit
 ) {
     val providers = listOf(
         Provider("John Katumba", 4.8, "1.2 km away", "UGX 40k/hr"),
@@ -82,7 +83,11 @@ fun ServiceDetailScreen(
                 )
             }
             items(providers) { provider ->
-                ProviderCard(provider, onClick = { onProviderClick(provider.name) })
+                ProviderCard(
+                    provider = provider,
+                    onClick = { onProviderClick(provider.name) },
+                    onBookClick = { onBookClick(provider.name) }
+                )
             }
             item {
                 Spacer(modifier = Modifier.height(16.dp))
@@ -118,7 +123,7 @@ fun ServiceDescription(serviceName: String) {
 }
 
 @Composable
-fun ProviderCard(provider: Provider, onClick: () -> Unit) {
+fun ProviderCard(provider: Provider, onClick: () -> Unit, onBookClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -156,7 +161,7 @@ fun ProviderCard(provider: Provider, onClick: () -> Unit) {
                 Text(text = provider.price, fontSize = 14.sp, color = UgaGreen, fontWeight = FontWeight.Bold)
             }
             Button(
-                onClick = { /* TODO: Booking */ },
+                onClick = onBookClick,
                 colors = ButtonDefaults.buttonColors(containerColor = UgaGreen),
                 shape = RoundedCornerShape(12.dp),
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
@@ -171,6 +176,11 @@ fun ProviderCard(provider: Provider, onClick: () -> Unit) {
 @Composable
 fun ServiceDetailScreenPreview() {
     UgaWakaTheme {
-        ServiceDetailScreen(serviceName = "Plumbing", onBack = {}, onProviderClick = {})
+        ServiceDetailScreen(
+            serviceName = "Plumbing",
+            onBack = {},
+            onProviderClick = {},
+            onBookClick = {}
+        )
     }
 }

@@ -48,19 +48,49 @@ fun UgaWakaApp() {
                 serviceName = serviceName,
                 onBack = { navController.popBackStack() },
                 onProviderClick = { providerName ->
-                    navController.navigate("providerProfile/$providerName")
+                    navController.navigate("providerProfile/$providerName/$serviceName")
+                },
+                onBookClick = { providerName ->
+                    navController.navigate("booking/$providerName/$serviceName")
                 }
             )
         }
         composable(
-            route = "providerProfile/{providerName}",
-            arguments = listOf(navArgument("providerName") { type = NavType.StringType })
+            route = "providerProfile/{providerName}/{serviceName}",
+            arguments = listOf(
+                navArgument("providerName") { type = NavType.StringType },
+                navArgument("serviceName") { type = NavType.StringType }
+            )
         ) { backStackEntry ->
             val providerName = backStackEntry.arguments?.getString("providerName") ?: ""
+            val serviceName = backStackEntry.arguments?.getString("serviceName") ?: ""
             ProviderProfileScreen(
                 providerName = providerName,
                 onBack = { navController.popBackStack() },
-                onBook = { /* TODO: Booking logic */ }
+                onBook = {
+                    navController.navigate("booking/$providerName/$serviceName")
+                }
+            )
+        }
+        composable(
+            route = "booking/{providerName}/{serviceName}",
+            arguments = listOf(
+                navArgument("providerName") { type = NavType.StringType },
+                navArgument("serviceName") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val providerName = backStackEntry.arguments?.getString("providerName") ?: ""
+            val serviceName = backStackEntry.arguments?.getString("serviceName") ?: ""
+            BookingScreen(
+                providerName = providerName,
+                serviceName = serviceName,
+                onBack = { navController.popBackStack() },
+                onBookingConfirm = {
+                    // For now, just go back to services or show success
+                    navController.navigate("services") {
+                        popUpTo("services") { inclusive = true }
+                    }
+                }
             )
         }
     }
