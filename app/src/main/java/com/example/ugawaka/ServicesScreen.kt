@@ -37,9 +37,17 @@ data class ServiceCategory(
 )
 
 @Composable
-fun ServicesScreen(onServiceClick: (String) -> Unit) {
+fun ServicesScreen(
+    onServiceClick: (String) -> Unit,
+    onNavigate: (String) -> Unit
+) {
     Scaffold(
-        bottomBar = { UgaWakaBottomNavigation(currentScreen = "services") }
+        bottomBar = { 
+            UgaWakaBottomNavigation(
+                currentScreen = "services",
+                onNavigate = onNavigate
+            ) 
+        }
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -228,7 +236,11 @@ fun CategoryItem(category: ServiceCategory, onClick: () -> Unit) {
 }
 
 @Composable
-fun UgaWakaBottomNavigation(currentScreen: String, isProvider: Boolean = false) {
+fun UgaWakaBottomNavigation(
+    currentScreen: String,
+    isProvider: Boolean = false,
+    onNavigate: (String) -> Unit
+) {
     NavigationBar(
         containerColor = Color.White,
         tonalElevation = 8.dp
@@ -237,7 +249,9 @@ fun UgaWakaBottomNavigation(currentScreen: String, isProvider: Boolean = false) 
             icon = { Icon(Icons.Default.Home, contentDescription = null) },
             label = { Text("Home") },
             selected = currentScreen == "home",
-            onClick = { /* TODO */ },
+            onClick = { 
+                if (isProvider) onNavigate("providerDashboard") else onNavigate("services")
+            },
             colors = NavigationBarItemDefaults.colors(selectedIconColor = UgaGreen, selectedTextColor = UgaGreen)
         )
         if (!isProvider) {
@@ -245,7 +259,7 @@ fun UgaWakaBottomNavigation(currentScreen: String, isProvider: Boolean = false) 
                 icon = { Icon(Icons.Default.Handyman, contentDescription = null) },
                 label = { Text("Services") },
                 selected = currentScreen == "services",
-                onClick = { /* TODO */ },
+                onClick = { onNavigate("services") },
                 colors = NavigationBarItemDefaults.colors(selectedIconColor = UgaGreen, selectedTextColor = UgaGreen)
             )
         }
@@ -253,14 +267,16 @@ fun UgaWakaBottomNavigation(currentScreen: String, isProvider: Boolean = false) 
             icon = { Icon(Icons.Default.CalendarMonth, contentDescription = null) },
             label = { Text("Bookings") },
             selected = currentScreen == "bookings",
-            onClick = { /* TODO */ },
+            onClick = { onNavigate("bookings") },
             colors = NavigationBarItemDefaults.colors(selectedIconColor = UgaGreen, selectedTextColor = UgaGreen)
         )
         NavigationBarItem(
             icon = { Icon(Icons.Default.Person, contentDescription = null) },
             label = { Text("Profile") },
             selected = currentScreen == "profile",
-            onClick = { /* TODO */ },
+            onClick = { 
+                if (isProvider) onNavigate("myProviderProfile") else onNavigate("profile")
+            },
             colors = NavigationBarItemDefaults.colors(selectedIconColor = UgaGreen, selectedTextColor = UgaGreen)
         )
     }
@@ -270,6 +286,6 @@ fun UgaWakaBottomNavigation(currentScreen: String, isProvider: Boolean = false) 
 @Composable
 fun ServicesScreenPreview() {
     UgaWakaTheme {
-        ServicesScreen(onServiceClick = {})
+        ServicesScreen(onServiceClick = {}, onNavigate = {})
     }
 }

@@ -25,7 +25,8 @@ import com.example.ugawaka.ui.theme.UgaWakaTheme
 @Composable
 fun ProviderDashboardScreen(
     onLogout: () -> Unit,
-    onProfileClick: () -> Unit
+    onProfileClick: () -> Unit,
+    onNavigate: (String) -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -43,7 +44,7 @@ fun ProviderDashboardScreen(
             )
         },
         bottomBar = {
-            UgaWakaBottomNavigation(currentScreen = "home", isProvider = true)
+            UgaWakaBottomNavigation(currentScreen = "home", isProvider = true, onNavigate = onNavigate)
         }
     ) { paddingValues ->
         LazyColumn(
@@ -210,6 +211,6 @@ fun BookingRequestCard(booking: BookingRequest) {
 @Composable
 fun ProviderDashboardScreenPreview() {
     UgaWakaTheme {
-        ProviderDashboardScreen(onLogout = {}, onProfileClick = {})
+        ProviderDashboardScreen(onLogout = {}, onProfileClick = {}, onNavigate = {})
     }
 }

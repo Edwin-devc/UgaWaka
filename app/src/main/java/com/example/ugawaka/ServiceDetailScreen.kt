@@ -39,7 +39,8 @@ fun ServiceDetailScreen(
     serviceName: String,
     onBack: () -> Unit,
     onProviderClick: (String) -> Unit,
-    onBookClick: (String) -> Unit
+    onBookClick: (String) -> Unit,
+    onNavigate: (String) -> Unit
 ) {
     val providers = listOf(
         Provider("John Katumba", 4.8, "1.2 km away", "UGX 40k/hr"),
@@ -63,7 +64,7 @@ fun ServiceDetailScreen(
                 )
             )
         },
-        bottomBar = { UgaWakaBottomNavigation(currentScreen = "services") }
+        bottomBar = { UgaWakaBottomNavigation(currentScreen = "services", onNavigate = onNavigate) }
     ) { paddingValues ->
         LazyColumn(
             modifier = Modifier
@@ -180,7 +181,8 @@ fun ServiceDetailScreenPreview() {
             serviceName = "Plumbing",
             onBack = {},
             onProviderClick = {},
-            onBookClick = {}
+            onBookClick = {},
+            onNavigate = {}
         )
     }
 }

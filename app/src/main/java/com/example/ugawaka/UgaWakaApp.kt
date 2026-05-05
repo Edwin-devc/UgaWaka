@@ -61,8 +61,43 @@ fun UgaWakaApp() {
                     }
                 },
                 onProfileClick = {
-                    // Navigate to provider's own profile view/edit
-                    navController.navigate("providerProfile/John Katumba/Plumbing")
+                    // Navigate to provider's own profile
+                    navController.navigate("myProviderProfile")
+                },
+                onNavigate = { route ->
+                    navController.navigate(route) {
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                }
+            )
+        }
+        composable("profile") {
+            UserProfileScreen(
+                onBack = { navController.popBackStack() },
+                onLogout = {
+                    navController.navigate("signin") {
+                        popUpTo(0) { inclusive = true }
+                    }
+                },
+                onNavigate = { route ->
+                    navController.navigate(route) {
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                },
+                onBookingHistoryClick = {
+                    navController.navigate("bookings")
+                }
+            )
+        }
+        composable("bookings") {
+            BookingsScreen(
+                onNavigate = { route ->
+                    navController.navigate(route) {
+                        launchSingleTop = true
+                        restoreState = true
+                    }
                 }
             )
         }
@@ -70,6 +105,12 @@ fun UgaWakaApp() {
             ServicesScreen(
                 onServiceClick = { serviceName ->
                     navController.navigate("serviceDetail/$serviceName")
+                },
+                onNavigate = { route ->
+                    navController.navigate(route) {
+                        launchSingleTop = true
+                        restoreState = true
+                    }
                 }
             )
         }
@@ -86,6 +127,31 @@ fun UgaWakaApp() {
                 },
                 onBookClick = { providerName ->
                     navController.navigate("booking/$providerName/$serviceName")
+                },
+                onNavigate = { route ->
+                    navController.navigate(route) {
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                }
+            )
+        }
+        composable("myProviderProfile") {
+            ProviderProfileScreen(
+                providerName = "John Katumba", // Mock data
+                isOwnProfile = true,
+                onBack = { navController.popBackStack() },
+                onBook = {}, // Not needed for own profile
+                onNavigate = { route ->
+                    navController.navigate(route) {
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                },
+                onLogout = {
+                    navController.navigate("signin") {
+                        popUpTo(0) { inclusive = true }
+                    }
                 }
             )
         }
@@ -103,6 +169,12 @@ fun UgaWakaApp() {
                 onBack = { navController.popBackStack() },
                 onBook = {
                     navController.navigate("booking/$providerName/$serviceName")
+                },
+                onNavigate = { route ->
+                    navController.navigate(route) {
+                        launchSingleTop = true
+                        restoreState = true
+                    }
                 }
             )
         }
