@@ -5,6 +5,11 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.Handyman
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -16,6 +21,55 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.ugawaka.ui.theme.UgaGreen
+
+@Composable
+fun UgaWakaBottomNavigation(
+    currentScreen: String,
+    isProvider: Boolean = false,
+    onNavigate: (String) -> Unit
+) {
+    NavigationBar(
+        containerColor = Color.White,
+        tonalElevation = 8.dp
+    ) {
+        NavigationBarItem(
+            icon = { Icon(Icons.Default.Home, contentDescription = null) },
+            label = { Text("Home") },
+            selected = currentScreen == "home",
+            onClick = {
+                if (isProvider) onNavigate("providerDashboard") else onNavigate("home")
+            },
+            colors = NavigationBarItemDefaults.colors(selectedIconColor = UgaGreen, selectedTextColor = UgaGreen)
+        )
+        if (!isProvider) {
+            NavigationBarItem(
+                icon = { Icon(Icons.Default.Handyman, contentDescription = null) },
+                label = { Text("Services") },
+                selected = currentScreen == "services",
+                onClick = { onNavigate("services") },
+                colors = NavigationBarItemDefaults.colors(selectedIconColor = UgaGreen, selectedTextColor = UgaGreen)
+            )
+        }
+        NavigationBarItem(
+            icon = { Icon(Icons.Default.CalendarMonth, contentDescription = null) },
+            label = { Text("Bookings") },
+            selected = currentScreen == "bookings",
+            onClick = {
+                if (isProvider) onNavigate("providerBookings") else onNavigate("bookings")
+            },
+            colors = NavigationBarItemDefaults.colors(selectedIconColor = UgaGreen, selectedTextColor = UgaGreen)
+        )
+        NavigationBarItem(
+            icon = { Icon(Icons.Default.Person, contentDescription = null) },
+            label = { Text("Profile") },
+            selected = currentScreen == "profile",
+            onClick = {
+                if (isProvider) onNavigate("myProviderProfile") else onNavigate("profile")
+            },
+            colors = NavigationBarItemDefaults.colors(selectedIconColor = UgaGreen, selectedTextColor = UgaGreen)
+        )
+    }
+}
 
 @Composable
 fun SectionLabel(text: String, modifier: Modifier = Modifier) {
@@ -55,15 +109,17 @@ fun CustomTextField(
     onValueChange: (String) -> Unit,
     placeholder: String,
     leadingIcon: androidx.compose.ui.graphics.vector.ImageVector,
+    modifier: Modifier = Modifier,
     keyboardType: KeyboardType = KeyboardType.Text,
-    isPassword: Boolean = false
+    isPassword: Boolean = false,
+    singleLine: Boolean = true
 ) {
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
-            .height(64.dp),
+            .then(if (singleLine) Modifier.height(64.dp) else Modifier),
         placeholder = { Text(text = placeholder, color = Color.Gray) },
         leadingIcon = {
             Icon(
@@ -81,6 +137,6 @@ fun CustomTextField(
             unfocusedBorderColor = Color.LightGray,
             cursorColor = UgaGreen
         ),
-        singleLine = true
+        singleLine = singleLine
     )
 }

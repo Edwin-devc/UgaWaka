@@ -1,6 +1,19 @@
 package com.example.ugawaka
 
 import androidx.compose.runtime.Composable
+import com.example.ugawaka.ui.auth.SignInScreen
+import com.example.ugawaka.ui.auth.SignUpScreen
+import com.example.ugawaka.ui.booking.BookingScreen
+import com.example.ugawaka.ui.home.HomeScreen
+import com.example.ugawaka.ui.services.ServicesScreen
+import com.example.ugawaka.ui.services.ServiceDetailScreen
+import com.example.ugawaka.ui.provider.ProviderSetupScreen
+import com.example.ugawaka.ui.provider.ProviderDashboardScreen
+import com.example.ugawaka.ui.provider.ProviderBookingsScreen
+import com.example.ugawaka.ui.provider.ProviderProfileScreen
+import com.example.ugawaka.ui.profile.UserProfileScreen
+import com.example.ugawaka.ui.bookings.BookingsScreen
+import com.example.ugawaka.ui.map.LiveMapScreen
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -21,7 +34,7 @@ fun UgaWakaApp() {
                             popUpTo("signin") { inclusive = true }
                         }
                     } else {
-                        navController.navigate("services") {
+                        navController.navigate("home") {
                             popUpTo("signin") { inclusive = true }
                         }
                     }
@@ -33,11 +46,12 @@ fun UgaWakaApp() {
                 onSignInClick = { navController.navigate("signin") },
                 onSignUpSuccess = { role ->
                     if (role == "Provider") {
-                        navController.navigate("providerSetup") {
+                        // Redirect providers to sign in after registration for approval
+                        navController.navigate("signin") {
                             popUpTo("signup") { inclusive = true }
                         }
                     } else {
-                        navController.navigate("services") {
+                        navController.navigate("home") {
                             popUpTo("signup") { inclusive = true }
                         }
                     }
@@ -101,6 +115,17 @@ fun UgaWakaApp() {
                 }
             )
         }
+        composable("map") {
+            LiveMapScreen(
+                onBack = { navController.popBackStack() },
+                onNavigate = { route ->
+                    navController.navigate(route) {
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                }
+            )
+        }
         composable("providerBookings") {
             ProviderBookingsScreen(
                 onNavigate = { route ->
@@ -111,10 +136,26 @@ fun UgaWakaApp() {
                 }
             )
         }
+        composable("home") {
+            HomeScreen(
+                onServiceClick = { serviceId ->
+                    navController.navigate("serviceDetail/$serviceId")
+                },
+                onViewAllClick = {
+                    navController.navigate("services")
+                },
+                onNavigate = { route ->
+                    navController.navigate(route) {
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                }
+            )
+        }
         composable("services") {
             ServicesScreen(
-                onServiceClick = { serviceName ->
-                    navController.navigate("serviceDetail/$serviceName")
+                onServiceClick = { serviceId ->
+                    navController.navigate("serviceDetail/$serviceId")
                 },
                 onNavigate = { route ->
                     navController.navigate(route) {
@@ -125,18 +166,18 @@ fun UgaWakaApp() {
             )
         }
         composable(
-            route = "serviceDetail/{serviceName}",
-            arguments = listOf(navArgument("serviceName") { type = NavType.StringType })
+            route = "serviceDetail/{serviceId}",
+            arguments = listOf(navArgument("serviceId") { type = NavType.IntType })
         ) { backStackEntry ->
-            val serviceName = backStackEntry.arguments?.getString("serviceName") ?: ""
+            val serviceId = backStackEntry.arguments?.getInt("serviceId") ?: 0
             ServiceDetailScreen(
-                serviceName = serviceName,
+                serviceId = serviceId,
                 onBack = { navController.popBackStack() },
-                onProviderClick = { providerName ->
-                    navController.navigate("providerProfile/$providerName/$serviceName")
+                onProviderClick = { providerId ->
+                    navController.navigate("providerProfile/$providerId/$serviceId")
                 },
-                onBookClick = { providerName ->
-                    navController.navigate("booking/$providerName/$serviceName")
+                onBookClick = { providerId ->
+                    navController.navigate("booking/$providerId/$serviceId")
                 },
                 onNavigate = { route ->
                     navController.navigate(route) {
@@ -148,7 +189,7 @@ fun UgaWakaApp() {
         }
         composable("myProviderProfile") {
             ProviderProfileScreen(
-                providerName = "John Katumba", // Mock data
+                providerId = 1, // This should be the logged in provider's ID
                 isOwnProfile = true,
                 onBack = { navController.popBackStack() },
                 onBook = {}, // Not needed for own profile
@@ -166,19 +207,19 @@ fun UgaWakaApp() {
             )
         }
         composable(
-            route = "providerProfile/{providerName}/{serviceName}",
+            route = "providerProfile/{providerId}/{serviceId}",
             arguments = listOf(
-                navArgument("providerName") { type = NavType.StringType },
-                navArgument("serviceName") { type = NavType.StringType }
+                navArgument("providerId") { type = NavType.IntType },
+                navArgument("serviceId") { type = NavType.IntType }
             )
         ) { backStackEntry ->
-            val providerName = backStackEntry.arguments?.getString("providerName") ?: ""
-            val serviceName = backStackEntry.arguments?.getString("serviceName") ?: ""
+            val providerId = backStackEntry.arguments?.getInt("providerId") ?: 0
+            val serviceId = backStackEntry.arguments?.getInt("serviceId") ?: 0
             ProviderProfileScreen(
-                providerName = providerName,
+                providerId = providerId,
                 onBack = { navController.popBackStack() },
                 onBook = {
-                    navController.navigate("booking/$providerName/$serviceName")
+                    navController.navigate("booking/$providerId/$serviceId")
                 },
                 onNavigate = { route ->
                     navController.navigate(route) {
@@ -189,17 +230,17 @@ fun UgaWakaApp() {
             )
         }
         composable(
-            route = "booking/{providerName}/{serviceName}",
+            route = "booking/{providerId}/{serviceId}",
             arguments = listOf(
-                navArgument("providerName") { type = NavType.StringType },
-                navArgument("serviceName") { type = NavType.StringType }
+                navArgument("providerId") { type = NavType.IntType },
+                navArgument("serviceId") { type = NavType.IntType }
             )
         ) { backStackEntry ->
-            val providerName = backStackEntry.arguments?.getString("providerName") ?: ""
-            val serviceName = backStackEntry.arguments?.getString("serviceName") ?: ""
+            val providerId = backStackEntry.arguments?.getInt("providerId") ?: 0
+            val serviceId = backStackEntry.arguments?.getInt("serviceId") ?: 0
             BookingScreen(
-                providerName = providerName,
-                serviceName = serviceName,
+                providerId = providerId,
+                serviceId = serviceId,
                 onBack = { navController.popBackStack() },
                 onBookingConfirm = {
                     // For now, just go back to services or show success
